@@ -78,7 +78,8 @@ func EnableWallet(c *gin.Context) {
 		db := database.DBCon
 		if err := db.Where("owned_by = ?", id).First(&wallet).Error; err != nil {
 		}else{
-			// db.Model(models.Wallet{}).Where("owned_by = ?", id).Updates(map[string]interface{}{"status": "enabled", "updated_at": t})
+			
+			db.Model(models.Wallet{}).Where("owned_by = ?", id).Updates(map[string]interface{}{"status": "enabled", "updated_at": t})
 			 
 			// c.JSON(http.StatusBadRequest, gin.H{"error": "has been enabled!"})
 			// return

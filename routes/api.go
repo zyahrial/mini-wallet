@@ -30,13 +30,13 @@
 
     // Setup route group for the API
     api := router.Group("/api/v1")
-    api.POST("/wallet", controllers.ValidateAccount)
-    api.POST("/wallet/enable", controllers.EnableWallet)
+    api.POST("/init", controllers.ValidateAccount)
+    api.POST("/wallet", controllers.EnableWallet)
     api.GET("/wallet", controllers.GetWallet)
     api.PATCH("/wallet", controllers.DisableWallet)
     
     api.POST("/wallet/deposits", controllers.DepositWallet)
     api.POST("/wallet/withdrawals", controllers.WithdrawWallet)
 
-    router.Run(":8000")
+    router.Run(":80")
   }
