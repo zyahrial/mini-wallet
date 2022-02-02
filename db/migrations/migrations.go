@@ -29,7 +29,7 @@ func Migrate() {
 	// 	log.Fatalf("cannot drop table: %v", err)
 	// }
 
-	err := database.DBCon.AutoMigrate(&models.Account{}, &models.Wallet{}, &models.Deposit{}).Error
+	err := database.DBCon.AutoMigrate(&models.Account{}, &models.Wallet{}, &models.Deposit{}, &models.Withdraw{}).Error
 	if err != nil {
 		log.Fatalf("cannot migrate table: %v", err)
 	}

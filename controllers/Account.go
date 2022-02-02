@@ -78,7 +78,26 @@ func EnableWallet(c *gin.Context) {
 		db := database.DBCon
 		if err := db.Where("owned_by = ?", id).First(&wallet).Error; err != nil {
 		}else{
-			c.JSON(http.StatusBadRequest, gin.H{"error": "already enabled!"})
+			// db.Model(models.Wallet{}).Where("owned_by = ?", id).Updates(map[string]interface{}{"status": "enabled", "updated_at": t})
+			 
+			// c.JSON(http.StatusBadRequest, gin.H{"error": "has been enabled!"})
+			// return
+			db.Where("owned_by = ?", id).First(&wallet)
+			d := models.ShowWallet{wallet.ID,wallet.OwnedBy,wallet.Status,wallet.Balance,wallet.EnableAt}
+
+			res := new(models.Res1)
+			res.Status = "success"
+			//this is JSON in database
+			var requirement json.RawMessage
+
+			appendRes3 := models.Res3{d}
+			reqBodyBytes := new(bytes.Buffer)
+			json.NewEncoder(reqBodyBytes).Encode(appendRes3)
+
+			requirement = []byte(reqBodyBytes.Bytes())
+		
+			res.Requirement = &requirement
+			c.JSON(200, res)
 			return
 		}
 
@@ -136,11 +155,78 @@ func GetWallet(c *gin.Context) {
 
 		db := database.DBCon
 		if err := db.Where("owned_by = ?", id).First(&wallet).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "not found!"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found!"})
 			return
 		}
 
-		fmt.Println(wallet)
+		d := models.ShowWallet{wallet.ID,wallet.OwnedBy,wallet.Status,wallet.Balance,wallet.EnableAt}
+
+		res := new(models.Res1)
+		res.Status = "success"
+		//this is JSON in database
+		var requirement json.RawMessage
+
+		appendRes3 := models.Res3{d}
+		reqBodyBytes := new(bytes.Buffer)
+		json.NewEncoder(reqBodyBytes).Encode(appendRes3)
+
+		requirement = []byte(reqBodyBytes.Bytes())
+	
+		res.Requirement = &requirement
+
+		c.JSON(200, res)
+
+	} else {
+		fmt.Println(err)
+		c.AbortWithStatus(http.StatusUnauthorized)
+	}
+}
+
+
+func DisableWallet(c *gin.Context) {
+
+	is_disabled := c.PostForm("is_disabled")
+
+	if is_disabled == "" {
+		c.JSON(http.StatusOK, gin.H{"status": "is_disabled is required!"})
+		return
+	}
+
+	const BEARER_SCHEMA = "Token "
+	
+	authHeader := c.GetHeader("Authorization")
+	myToken := authHeader[len(BEARER_SCHEMA):]
+
+	token, err := JWTAuthService().ValidateToken(myToken)
+
+	if err != nil {
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {	
+
+		var wallet models.Wallet
+		c.BindJSON(&wallet)
+	
+		id := claims["id"].(string)
+		// t := time.Now()
+
+		db := database.DBCon
+
+		t := time.Now()
+
+		if is_disabled == "true" {
+			db.Model(models.Wallet{}).Where("owned_by = ?", id).Updates(map[string]interface{}{"status": "disabled", "updated_at": t})
+		}else{
+			c.JSON(http.StatusOK, gin.H{"status": "is_disabled doesn't valid!"})
+			return
+		}
+
+		if err := db.Where("owned_by = ?", id).First(&wallet).Error; err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found!"})
+			return
+		}
 
 		d := models.ShowWallet{wallet.ID,wallet.OwnedBy,wallet.Status,wallet.Balance,wallet.EnableAt}
 

@@ -33,8 +33,10 @@
     api.POST("/wallet", controllers.ValidateAccount)
     api.POST("/wallet/enable", controllers.EnableWallet)
     api.GET("/wallet", controllers.GetWallet)
+    api.PATCH("/wallet", controllers.DisableWallet)
     
     api.POST("/wallet/deposits", controllers.DepositWallet)
+    api.POST("/wallet/withdrawals", controllers.WithdrawWallet)
 
     router.Run(":8000")
   }

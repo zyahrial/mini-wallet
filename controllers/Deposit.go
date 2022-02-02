@@ -19,7 +19,6 @@ import (
 
 func DepositWallet(c *gin.Context) {
 
-	// var deposit models.Deposit
 	var wallet models.Wallet
 
 	// t := time.Now()
@@ -44,7 +43,7 @@ func DepositWallet(c *gin.Context) {
 
 		db := database.DBCon
 		if err := db.Where("owned_by = ?", id).First(&wallet).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "not found!"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "user not found!"})
 			return
 		}
 
@@ -60,7 +59,6 @@ func DepositWallet(c *gin.Context) {
 			// geWallet := db.Where("owned_by = ?", id).Select("balance").First(&wallet)
 			// fmt.Println(geWallet)
 			newBalance := wallet.Balance + amount
-
 			db.Model(models.Wallet{}).Where("owned_by = ?", id).Updates(map[string]interface{}{"balance": newBalance, "updated_at": t})
 		}
 

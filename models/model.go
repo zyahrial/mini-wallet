@@ -25,6 +25,10 @@ type Res4 struct {
 	Deposit ShowDeposit `json:"deposit"`
 }
 
+type Res5 struct {
+	Withdraw ShowWithdraw `json:"withdrawn"`
+}
+
 type Account struct {
   ID       uuid.UUID   `gorm:"id,primary_key;type:uuid;default:uuid_generate_v4();"`
   Name     string      `gorm:"size:255"`
@@ -69,6 +73,26 @@ type ShowDeposit struct {
   DepositedBy     string   `json:"deposited_by" bson:"deposited_by"`
   Status     string   `json:"status" bson:"status"`
   DepositeAt    time.Time   `json:"deposited_at" bson:"deposited_at"`
+  Amount     int64   `json:"amount" bson:"amount"`
+  ReferenceId     string     `json:"reference_id" bson:"reference_id"`
+}
+
+type Withdraw struct {
+  ID            uuid.UUID   `gorm:"id,primary_key;type:uuid;default:uuid_generate_v4();"`
+  WithdrawnBy     string     `gorm:"size:255", unique`
+  Status     string      `gorm:"size:255"`
+  WithdrawnAt    time.Time
+  Amount     int64      `gorm:""`
+  ReferenceId     string     `gorm:"size:255", unique`
+  Created_at time.Time
+  Updated_at time.Time
+}
+
+type ShowWithdraw struct {
+  ID          uuid.UUID   `json:"id" bson:"id"`
+  WithdrawnBy     string    `json:"withdrawn_by" bson:"withdrawn_by"`
+  Status     string   `json:"status" bson:"status"`
+  WithdrawnAt    time.Time    `json:"withdrawn_at" bson:"withdrawn_at"`
   Amount     int64   `json:"amount" bson:"amount"`
   ReferenceId     string     `json:"reference_id" bson:"reference_id"`
 }
